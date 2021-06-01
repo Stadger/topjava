@@ -18,8 +18,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import static java.util.function.UnaryOperator.identity;
-
 public class UserMealsUtil {
     public static void main(String[] args) {
         List<UserMeal> meals = Arrays.asList(
@@ -112,7 +110,7 @@ public class UserMealsUtil {
             private final LocalTime startTime;
             private final LocalTime endTime;
             private final int caloriesPerDay;
-            Map<LocalDate, Integer> caloriesPerDayMap = new HashMap<>();
+            final Map<LocalDate, Integer> caloriesPerDayMap = new HashMap<>();
 
             public MealCollector(LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
                 this.startTime = startTime;
