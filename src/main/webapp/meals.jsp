@@ -18,13 +18,14 @@
         <td>Калории</td>
     </tr>
     <c:forEach items="${meals}" var="mealTo">
-
+        <jsp:useBean id="mealTo"
+                     class="ru.javawebinar.topjava.model.MealTo"/>
         <tr style="color:${mealTo.isExcess() ? 'red' : 'green'}">
-            <td>${mealTo.getDateTime().format(TimeUtil.dtf)}</td>
-            <td>${mealTo.getDescription()}</td>
-            <td>${mealTo.getCalories()}</td>
-            <td><a href="meals?action=edit&mealId=${mealTo.getId()}">Update</a></td>
-            <td><a href="meals?action=delete&mealId=${mealTo.getId()}">Delete</a></td>
+            <td>${mealTo.dateTime.format(TimeUtil.dtf)}</td>
+            <td>${mealTo.description}</td>
+            <td>${mealTo.calories}</td>
+            <td><a href="meals?action=edit&mealId=${mealTo.id}">Update</a></td>
+            <td><a href="meals?action=delete&mealId=${mealTo.id}">Delete</a></td>
         </tr>
     </c:forEach>
 </table>

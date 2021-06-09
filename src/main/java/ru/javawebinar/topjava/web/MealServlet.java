@@ -31,26 +31,30 @@ public class MealServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.debug("redirect to meals");
+        log.debug("into meals servlet doGet method");
         String forward = "";
         String action = request.getParameter("action");
         if (action == null) action = "listMeal";
         switch (action) {
             case "delete":
+                log.debug("case delete");
                 long mealIdDel = Integer.parseInt(request.getParameter("mealId"));
                 dao.delete(mealIdDel);
                 response.sendRedirect(request.getContextPath() + LIST_MEAL_SERVLET);
                 return;
             case "edit":
+                log.debug("case edit");
                 long mealId = Integer.parseInt(request.getParameter("mealId"));
                 Meal meal = dao.get(mealId);
                 forward = INSERT_OR_EDIT;
                 request.setAttribute("mealEnt", meal);
                 break;
             case "insert":
+                log.debug("case insert");
                 response.sendRedirect(request.getContextPath() + INSERT_OR_EDIT);
                 return;
             default:
+                log.debug("case default");
                 forward = LIST_MEAL;
                 request.setAttribute("meals", MealsUtil.filteredByStreams(dao.getAll(), LocalTime.MIN, LocalTime.MAX, caloriesPerDay));
         }
@@ -59,6 +63,7 @@ public class MealServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        log.debug("into meals servlet doPost method");
         response.setCharacterEncoding("UTF-8");
         request.setCharacterEncoding("UTF-8");
 
@@ -68,12 +73,15 @@ public class MealServlet extends HttpServlet {
 
         String mealId = request.getParameter("mealId");
         if (mealId == null || mealId.isEmpty()) {
+            log.debug("if Null mealid");
             Meal meal = new Meal(ldt, description, calories);
             dao.create(meal);
         } else {
+            log.debug("if NotNull mealid");
             Meal meal = new Meal(Integer.parseInt(mealId), ldt, description, calories);
             dao.update(meal);
         }
+        log.debug("redirect to meals servlet");
         response.sendRedirect(request.getContextPath() + LIST_MEAL_SERVLET);
     }
 }

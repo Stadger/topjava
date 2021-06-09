@@ -22,6 +22,13 @@
 <h1>прием пищи</h1>
 <body>
 <form method="POST" action='meals' name="frmAddUser">
+
+    <div class="field" hidden="true">
+        <label>id</label>
+        <input
+                type="text" name="mealId"
+                value=${mealEnt.getId()}>
+    </div>
     <div class="field">
         <label>description</label>
         <input

@@ -2,6 +2,7 @@ package ru.javawebinar.topjava.dao;
 
 import ru.javawebinar.topjava.model.Meal;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
@@ -11,51 +12,62 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class MealDaoMock implements MealDao {
-    private volatile AtomicLong id = new AtomicLong(0);
-    private final Map<Long,Meal> map = new ConcurrentHashMap<>();;
+    private final AtomicLong idCount = new AtomicLong(0);
+    private final Map<Long, Meal> data = new ConcurrentHashMap<>();
+    ;
 
 
     public MealDaoMock() {
-        add(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500);
-        add(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000);
-        add(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500);
-        add(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100);
-        add(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000);
-        add(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500);
-        add(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410);
-    }
-
-    public void add(LocalDateTime dateTime, String description, int calories) {
-        long id = this.id.incrementAndGet();
-        map.put(
-                id,new Meal(id,dateTime, description, calories)
-        );
+        create(new Meal(idCount.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
+        create(new Meal(idCount.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000));
+        create(new Meal(idCount.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500));
+        create(new Meal(idCount.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100));
+        create(new Meal(idCount.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000));
+        create(new Meal(idCount.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500));
+        create(new Meal(idCount.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
     }
 
     @Override
     public Meal get(long id) {
-        return map.get(id);
+        return data.get(id);
     }
 
     @Override
     public List<Meal> getAll() {
-        return new ArrayList<Meal>(map.values());
+        return new ArrayList<>(data.values());
     }
 
     @Override
-    public void create(Meal meal) {
-        add(meal.getDateTime(),meal.getDescription(),meal.getCalories());
-        //map.putIfAbsent(meal.getId(),meal);
+    public Meal create(Meal meal) {
+        if (meal.getId() == 0) {
+            long id = this.idCount.incrementAndGet();
+            meal = new Meal(id, meal.getDateTime(), meal.getDescription(), meal.getCalories());
+            data.put(id, meal);
+        } else {
+            data.put(meal.getId(), meal);
+        }
+        return meal;
     }
 
+//    private void setId(Meal meal,long id){
+//          // метод для сохранения ID
+//        Field field = null;
+//        try {
+//            field = meal.getClass().getDeclaredField("id");
+//            field.setAccessible(true);
+//            field.set(meal, id);
+//        } catch (NoSuchFieldException|IllegalAccessException e) {
+//        }
+//    }
+
     @Override
-    public void update(Meal meal) {
-        map.computeIfPresent(meal.getId(),(key, val)  -> meal);
+    public Meal update(Meal meal) {
+        return data.computeIfPresent(meal.getId(), (key, val) -> meal);
     }
 
     @Override
     public void delete(long id) {
-        map.remove(id);
+        data.remove(id);
     }
 
 }
