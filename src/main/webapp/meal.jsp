@@ -16,38 +16,33 @@
     }
     </style>
 </head>
-<a href="meals?action=listMeal" target="_blank">meals</a>
+<a href="meals" target="_blank">meals</a>
 
 <hr align="left" color="Red" size="5" width="400"/>
 <h1>прием пищи</h1>
 <body>
 <form method="POST" action='meals' name="frmAddUser">
     <div class="field">
-        <label>Meal ID:</label>
-        <input type="text" readonly="readonly" name="mealId"
-               value="<c:out value="${mealEnt.getId()}" />"/>
-    </div>
-    <div class="field">
         <label>description</label>
         <input
                 type="text" name="description"
-                value="<c:out value="${mealEnt.getDescription()}" />"/>
+                value=${mealEnt.getDescription()}>
     </div>
     <div class="field">
         <label>calories</label>
         <input
                 type="number" name="calories"
-                value="<c:out value="${mealEnt.getCalories()}" />"/>
+                value=${mealEnt.getCalories()}>
     </div>
     <div class="field">
         <label>Date</label>
         <input
                 type="datetime-local" name="dateTime"
-                value="<c:out value="${mealEnt.getDateTime()}" />"/>
+                value=${mealEnt.getDateTime()}>
     </div>
     <div class="field">
         <label></label>
-        <input type="submit" value="Submit"/>
+        <input type="submit" value="Submit">
     </div>
 </form>
 </body>
