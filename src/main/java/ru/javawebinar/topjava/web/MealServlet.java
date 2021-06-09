@@ -20,7 +20,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class MealServlet extends HttpServlet {
     private static String INSERT_OR_EDIT = "/meal.jsp";
     private static String LIST_MEAL = "/meals.jsp";
-    private static String LIST_MEAL_SERVLET = "/topjava/meals";
+    private static String LIST_MEAL_SERVLET = "/meals";
     private static final Logger log = getLogger(MealServlet.class);
     private MealDao dao;
     private final int caloriesPerDay = 2000;
@@ -39,7 +39,7 @@ public class MealServlet extends HttpServlet {
             case "delete":
                 long mealIdDel = Integer.parseInt(request.getParameter("mealId"));
                 dao.delete(mealIdDel);
-                response.sendRedirect(LIST_MEAL_SERVLET);
+                response.sendRedirect(request.getContextPath() + LIST_MEAL_SERVLET);
                 return;
             case "edit":
                 long mealId = Integer.parseInt(request.getParameter("mealId"));
@@ -48,8 +48,8 @@ public class MealServlet extends HttpServlet {
                 request.setAttribute("mealEnt", meal);
                 break;
             case "insert":
-                forward = INSERT_OR_EDIT;
-                break;
+                response.sendRedirect(request.getContextPath() + INSERT_OR_EDIT);
+                return;
             default:
                 forward = LIST_MEAL;
                 request.setAttribute("meals", MealsUtil.filteredByStreams(dao.getAll(), LocalTime.MIN, LocalTime.MAX, caloriesPerDay));
@@ -74,6 +74,6 @@ public class MealServlet extends HttpServlet {
             Meal meal = new Meal(Integer.parseInt(mealId), ldt, description, calories);
             dao.update(meal);
         }
-        response.sendRedirect(LIST_MEAL_SERVLET);
+        response.sendRedirect(request.getContextPath() + LIST_MEAL_SERVLET);
     }
 }
