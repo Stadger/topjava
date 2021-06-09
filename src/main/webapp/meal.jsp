@@ -21,31 +21,33 @@
 <hr align="left" color="Red" size="5" width="400"/>
 <h1>прием пищи</h1>
 <body>
-<form method="POST" action='meals' name="frmAddUser">
-
+<form method="POST" action='meals' name="frmAddUser"  >
+    <c:set var="mealF" value="${mealEnt}" />
+    <jsp:useBean id="mealF"
+                 class="ru.javawebinar.topjava.model.Meal"/>
     <div class="field" hidden="true">
         <label>id</label>
         <input
                 type="text" name="mealId"
-                value=${mealEnt.getId()}>
+                value=${mealF.id}>
     </div>
     <div class="field">
         <label>description</label>
         <input
                 type="text" name="description"
-                value=${mealEnt.getDescription()}>
+                value=${mealF.description}>
     </div>
     <div class="field">
         <label>calories</label>
         <input
                 type="number" name="calories"
-                value=${mealEnt.getCalories()}>
+                value=${mealF.calories}>
     </div>
     <div class="field">
         <label>Date</label>
         <input
                 type="datetime-local" name="dateTime"
-                value=${mealEnt.getDateTime()}>
+                value=${mealF.dateTime}>
     </div>
     <div class="field">
         <label></label>
