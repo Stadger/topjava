@@ -24,10 +24,6 @@ public class Meal {
         this(null, dateTime, description, calories);
     }
 
-    public Meal() {
-        this(null,null,0);
-    }
-
     public Long getId() {
         return id;
     }

@@ -24,7 +24,7 @@
 <form method="POST" action='meals' name="frmAddUser"  >
     <c:set var="mealVar" value="${mealEdit}" />
     <jsp:useBean id="mealVar"
-                 class="ru.javawebinar.topjava.model.Meal"/>
+                 type="ru.javawebinar.topjava.model.Meal"/>
     <div class="field" hidden="true">
         <label>id</label>
         <input
