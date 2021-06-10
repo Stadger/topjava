@@ -47,7 +47,7 @@ public class MealServlet extends HttpServlet {
                 long mealId = Integer.parseInt(request.getParameter("mealId"));
                 Meal meal = dao.get(mealId);
                 forward = INSERT_OR_EDIT;
-                request.setAttribute("mealEnt", meal);
+                request.setAttribute("mealEdit", meal);
                 break;
             case "insert":
                 log.debug("case insert");
@@ -78,7 +78,7 @@ public class MealServlet extends HttpServlet {
             dao.create(meal);
         } else {
             log.debug("if NotNull mealid");
-            Meal meal = new Meal(Integer.parseInt(mealId), ldt, description, calories);
+            Meal meal = new Meal(Long.parseLong(mealId), ldt, description, calories);
             dao.update(meal);
         }
         log.debug("redirect to meals servlet");

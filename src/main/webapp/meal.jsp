@@ -22,32 +22,32 @@
 <h1>прием пищи</h1>
 <body>
 <form method="POST" action='meals' name="frmAddUser"  >
-    <c:set var="mealF" value="${mealEnt}" />
-    <jsp:useBean id="mealF"
+    <c:set var="mealVar" value="${mealEdit}" />
+    <jsp:useBean id="mealVar"
                  class="ru.javawebinar.topjava.model.Meal"/>
     <div class="field" hidden="true">
         <label>id</label>
         <input
                 type="text" name="mealId"
-                value=${mealF.id}>
+                value=${mealVar.id}>
     </div>
     <div class="field">
         <label>description</label>
         <input
                 type="text" name="description"
-                value=${mealF.description}>
+                value=${mealVar.description}>
     </div>
     <div class="field">
         <label>calories</label>
         <input
                 type="number" name="calories"
-                value=${mealF.calories}>
+                value=${mealVar.calories}>
     </div>
     <div class="field">
         <label>Date</label>
         <input
                 type="datetime-local" name="dateTime"
-                value=${mealF.dateTime}>
+                value=${mealVar.dateTime}>
     </div>
     <div class="field">
         <label></label>

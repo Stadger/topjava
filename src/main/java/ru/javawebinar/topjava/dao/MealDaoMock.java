@@ -14,17 +14,15 @@ import java.util.concurrent.atomic.AtomicLong;
 public class MealDaoMock implements MealDao {
     private final AtomicLong idCount = new AtomicLong(0);
     private final Map<Long, Meal> data = new ConcurrentHashMap<>();
-    ;
-
 
     public MealDaoMock() {
-        create(new Meal(idCount.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
-        create(new Meal(idCount.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000));
-        create(new Meal(idCount.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500));
-        create(new Meal(idCount.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100));
-        create(new Meal(idCount.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000));
-        create(new Meal(idCount.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500));
-        create(new Meal(idCount.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
+        create(new Meal(null, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
+        create(new Meal(null, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000));
+        create(new Meal(null, LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500));
+        create(new Meal(null, LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100));
+        create(new Meal(null, LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000));
+        create(new Meal(null, LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500));
+        create(new Meal(null, LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
     }
 
     @Override
@@ -39,26 +37,15 @@ public class MealDaoMock implements MealDao {
 
     @Override
     public Meal create(Meal meal) {
-        if (meal.getId() == 0) {
+        if (meal.getId() == null) {
             long id = this.idCount.incrementAndGet();
             meal = new Meal(id, meal.getDateTime(), meal.getDescription(), meal.getCalories());
             data.put(id, meal);
+            return meal;
         } else {
-            data.put(meal.getId(), meal);
+            return null;
         }
-        return meal;
     }
-
-//    private void setId(Meal meal,long id){
-//          // метод для сохранения ID
-//        Field field = null;
-//        try {
-//            field = meal.getClass().getDeclaredField("id");
-//            field.setAccessible(true);
-//            field.set(meal, id);
-//        } catch (NoSuchFieldException|IllegalAccessException e) {
-//        }
-//    }
 
     @Override
     public Meal update(Meal meal) {
