@@ -39,8 +39,9 @@ public class InMemoryMealRepository implements MealRepository {
         // handle case: update, but not present in storage
         AtomicBoolean result = new AtomicBoolean(false);
         repository.computeIfPresent(meal.getId(), (id, oldMeal) -> {
-            if (oldMeal.getUserId() == userId && meal.getUserId() == userId) {
+            if (oldMeal.getUserId() == userId) {
                 result.set(true);
+                meal.setUserId(userId);
                 return meal;
             } else return oldMeal;
         });

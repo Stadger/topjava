@@ -26,29 +26,54 @@
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
         <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Calories</th>
+            <th>startDate</th>
+            <th>startTime</th>
+            <th>endDate</th>
+            <th>endTime</th>
             <th></th>
-            <th></th>
+
         </tr>
-        </thead>
-        <c:forEach items="${meals}" var="meal">
-            <jsp:useBean id="meal" type="ru.javawebinar.topjava.to.MealTo"/>
-            <tr class="${meal.excess ? 'excess' : 'normal'}">
-                <td>
-                        <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
-                        <%--<%=TimeUtil.toString(meal.getDateTime())%>--%>
-                        <%--${fn:replace(meal.dateTime, 'T', ' ')}--%>
-                        ${fn:formatDateTime(meal.dateTime)}
-                </td>
-                <td>${meal.description}</td>
-                <td>${meal.calories}</td>
-                <td><a href="meals?action=update&id=${meal.id}">Update</a></td>
-                <td><a href="meals?action=delete&id=${meal.id}">Delete</a></td>
+        <form method="get" action="meals">
+            <tr>
+                <%--                <c:set var="dateTime" value="${listDateAndTime}"/>--%>
+                <input type="hidden" name="action" value="filter">
+                <th><input type="date" name="startDate"></th>
+                <th><input type="time" name="startTime"></th>
+                <th><input type="date" name="endDate"></th>
+                <th><input type="time" name="endTime"></th>
+                <th>
+                    <button type="submit">Отфильтровать</button>
+                </th>
             </tr>
-        </c:forEach>
-    </table>
+        </form>
+        </thead>
+        <br><br>
+        <table border="1" cellpadding="8" cellspacing="0">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Calories</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <c:forEach items="${meals}" var="meal">
+                <jsp:useBean id="meal" type="ru.javawebinar.topjava.to.MealTo"/>
+                <tr class="${meal.excess ? 'excess' : 'normal'}">
+                    <td>
+                            <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
+                            <%--<%=TimeUtil.toString(meal.getDateTime())%>--%>
+                            <%--${fn:replace(meal.dateTime, 'T', ' ')}--%>
+                            ${fn:formatDateTime(meal.dateTime)}
+                    </td>
+                    <td>${meal.description}</td>
+                    <td>${meal.calories}</td>
+                    <td><a href="meals?action=update&id=${meal.id}">Update</a></td>
+                    <td><a href="meals?action=delete&id=${meal.id}">Delete</a></td>
+                </tr>
+            </c:forEach>
+        </table>
 </section>
 </body>
 </html>
