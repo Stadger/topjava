@@ -34,7 +34,7 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public User save(User user) {
         log.info("save {}", user);
-        if (getByEmail(user.getEmail())!=null) {
+        if (getByEmail(user.getEmail()) != null) {
             log.info("non-unique email", user);
             return null;
         }
@@ -57,7 +57,7 @@ public class InMemoryUserRepository implements UserRepository {
     public List<User> getAll() {
         log.info("getAll");
         List<User> result = new ArrayList<>(repository.values());
-        result.sort(Comparator.comparing(User::getName));
+        result.sort(Comparator.comparing(User::getName).thenComparing(User::getEmail));
         return result;
     }
 
@@ -65,6 +65,6 @@ public class InMemoryUserRepository implements UserRepository {
     public User getByEmail(String email) {
         log.info("getByEmail {}", email);
         return
-        repository.values().stream().filter(user -> user.getEmail().equals(email)).findFirst().orElse(null);
+                repository.values().stream().filter(user -> user.getEmail().equals(email)).findFirst().orElse(null);
     }
 }
