@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@Repository
+
 public class InMemoryMealRepository2 implements MealRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryMealRepository2.class);
     private final Map<Integer, Map<Integer, Meal>> repository = new ConcurrentHashMap<>();
@@ -75,7 +75,7 @@ public class InMemoryMealRepository2 implements MealRepository {
     @Override
     public List<Meal> getFilteredByDates(int userId, LocalDate startDate, LocalDate endDate) {
         log.info("getallFilterDate {} startTime{} endTime{} ", userId, startDate, endDate);
-        return filterByPredicate(userId, meal -> DateTimeUtil.isBetweenOpen(meal.getDate(), startDate, endDate));
+        return filterByPredicate(userId, meal -> DateTimeUtil.isBetweenClosed(meal.getDate(), startDate, endDate));
     }
 
     private List<Meal> filterByPredicate(int userId, Predicate<Meal> filter) {

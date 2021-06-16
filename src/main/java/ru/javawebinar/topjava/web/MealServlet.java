@@ -46,8 +46,11 @@ public class MealServlet extends HttpServlet {
                 Integer.parseInt(request.getParameter("calories")));
 
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-        if (meal.isNew()) mealRestController.create(meal);
-        else mealRestController.update(meal, meal.getId());
+        if (meal.isNew()) {
+            mealRestController.create(meal);
+        } else {
+            mealRestController.update(meal, meal.getId());
+        }
         response.sendRedirect("meals");
     }
 
@@ -72,19 +75,15 @@ public class MealServlet extends HttpServlet {
                 break;
             case "filter":
                 log.info("getAllFilter");
-                String line = request.getParameter("startDate");
-                LocalDate startDate = DateTimeUtil.dataParse(line);
-                line = request.getParameter("endDate");
-                LocalDate endDate = DateTimeUtil.dataParse(line);
-                line = request.getParameter("startTime");
-                LocalTime startTime = DateTimeUtil.timeParse(line);
-                line = request.getParameter("endTime");
-                LocalTime endTime =  DateTimeUtil.timeParse(line);
+                LocalDate startDate = DateTimeUtil.dataParse(request.getParameter("startDate"));
+                LocalDate endDate = DateTimeUtil.dataParse(request.getParameter("endDate"));
+                LocalTime startTime = DateTimeUtil.timeParse(request.getParameter("startTime"));
+                LocalTime endTime = DateTimeUtil.timeParse(request.getParameter("endTime"));
                 request.setAttribute("meals", mealRestController.getAllFiltered(startDate, startTime, endDate, endTime));
-                request.setAttribute("startTime",startTime);
-                request.setAttribute("endTime",endTime);
-                request.setAttribute("startDate",startDate);
-                request.setAttribute("endDate",endDate);
+//                request.setAttribute("startTime", startTime);
+//                request.setAttribute("endTime", endTime);
+//                request.setAttribute("startDate", startDate);
+//                request.setAttribute("endDate", endDate);
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
             case "all":
             default:

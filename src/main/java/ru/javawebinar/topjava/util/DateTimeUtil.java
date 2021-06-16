@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava.util;
 
+import org.springframework.util.StringUtils;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -13,28 +15,24 @@ public class DateTimeUtil {
         return lt.compareTo(startTime) >= 0 && lt.compareTo(endTime) < 0;
     }
 
-    public static boolean isBetweenOpen(LocalDate lt, LocalDate startDate, LocalDate endDate) {
-        //including interval boundaries
+    public static boolean isBetweenClosed(LocalDate lt, LocalDate startDate, LocalDate endDate) {
         return lt.compareTo(startDate) >= 0 && lt.compareTo(endDate) <= 0;
+    }
+
+    public static <T extends Comparable<? super T>> boolean isBetween(T tested, T startPeriod, T endPeriod) {
+        return tested.compareTo(startPeriod) >= 0 && tested.compareTo(endPeriod) <= 0;
     }
 
     public static String toString(LocalDateTime ldt) {
         return ldt == null ? "" : ldt.format(DATE_TIME_FORMATTER);
     }
 
-    public static LocalDate dataParse(String s){
-        try {
-            return LocalDate.parse(s);
-        }catch (DateTimeParseException|NullPointerException e){
-            return null;
-        }
+    public static LocalDate dataParse(String s) {
+        return StringUtils.hasLength(s) ? LocalDate.parse(s) : null;
     }
-    public static LocalTime timeParse(String s){
-        try {
-            return LocalTime.parse(s);
-        }catch (DateTimeParseException|NullPointerException e){
-            return null;
-        }
+
+    public static LocalTime timeParse(String s) {
+        return StringUtils.hasLength(s) ? LocalTime.parse(s) : null;
     }
 }
 

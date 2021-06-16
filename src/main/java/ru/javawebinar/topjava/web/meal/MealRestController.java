@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepository;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
@@ -22,6 +21,7 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 public class MealRestController {
     private static final Logger log = LoggerFactory.getLogger(MealRestController.class);
     private MealService service;
+
     @Autowired
     public MealRestController(MealService service) {
         this.service = service;
@@ -34,11 +34,11 @@ public class MealRestController {
 
     public List<MealTo> getAllFiltered(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
         log.info("getallFilter startDate{},startTime{}, endDate{},endTime{}", startDate, startTime, endDate, endTime);
-        startDate = (startDate == null)?LocalDate.MIN:startDate;
-        endDate = (endDate == null)?LocalDate.MAX: endDate;
+        startDate = (startDate == null) ? LocalDate.MIN : startDate;
+        endDate = (endDate == null) ? LocalDate.MAX : endDate;
         List<Meal> mealFilterDate = service.getFilterDate(SecurityUtil.authUserId(), startDate, endDate);
-        startTime = (startTime == null)?LocalTime.MIN:startTime;
-        endTime = (endTime == null)?LocalTime.MAX:endTime;
+        startTime = (startTime == null) ? LocalTime.MIN : startTime;
+        endTime = (endTime == null) ? LocalTime.MAX : endTime;
         return MealsUtil.getFilteredTos(mealFilterDate, SecurityUtil.authUserCaloriesPerDay(), startTime, endTime);
     }
 

@@ -35,7 +35,6 @@
         </tr>
         <form method="get" action="meals">
             <tr>
-                <%--                <c:set var="dateTime" value="${listDateAndTime}"/>--%>
                 <input type="hidden" name="action" value="filter">
                 <th><input type="date" name="startDate" value="${startDate}"></th>
                 <th><input type="time" name="startTime"value="${startTime}"></th>

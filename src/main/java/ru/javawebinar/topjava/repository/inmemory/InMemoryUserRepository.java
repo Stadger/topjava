@@ -32,10 +32,6 @@ public class InMemoryUserRepository implements UserRepository {
     public User save(User user) {
         log.info("save {}", user);
         if (user.isNew()) {
-            if (getByEmail(user.getEmail()) != null) {
-                log.info("non-unique email{}", user.getEmail());
-                return null;
-            }
             user.setId(counter.incrementAndGet());
             repository.put(user.getId(), user);
             return user;
