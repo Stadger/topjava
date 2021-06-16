@@ -23,8 +23,8 @@ public class InMemoryMealRepository2 implements MealRepository {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     {
-        MealsUtil.meals1.forEach(meal -> save(meal, 1));
-        MealsUtil.meals2.forEach(meal -> save(meal, 2));
+        MealsUtil.meals1().forEach(meal -> save(meal, 1));
+        MealsUtil.meals2().forEach(meal -> save(meal, 2));
     }
 
     @Override
@@ -80,7 +80,7 @@ public class InMemoryMealRepository2 implements MealRepository {
 
     private List<Meal> filterByPredicate(int userId, Predicate<Meal> filter) {
         return repository
-                .getOrDefault(userId,Collections.emptyMap())
+                .getOrDefault(userId, Collections.emptyMap())
                 .values()
                 .stream()
                 .filter(filter)

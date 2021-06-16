@@ -18,14 +18,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+@Repository
 public class InMemoryMealRepository implements MealRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryUserRepository.class);
     private final Map<Integer, Meal> repository = new ConcurrentHashMap<>();
     private final AtomicInteger counter = new AtomicInteger(0);
 
     {
-        MealsUtil.meals1.forEach(meal -> save(meal, 1));
-        MealsUtil.meals2.forEach(meal -> save(meal, 2));
+        MealsUtil.meals1().forEach(meal -> save(meal, 1));
+        MealsUtil.meals2().forEach(meal -> save(meal, 2));
     }
 
     @Override

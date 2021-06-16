@@ -12,10 +12,9 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
 public class MealService {
-    @Qualifier("inMemoryMealRepository2")
     private final MealRepository repository;
 
-    public MealService(@Qualifier("inMemoryMealRepository2") MealRepository repository) {
+    public MealService(@Qualifier("inMemoryMealRepository") MealRepository repository) {
         this.repository = repository;
     }
 
