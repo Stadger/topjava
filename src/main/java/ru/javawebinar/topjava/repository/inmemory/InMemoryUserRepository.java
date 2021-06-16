@@ -7,10 +7,7 @@ import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,17 +31,17 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public User save(User user) {
         log.info("save {}", user);
-        if (getByEmail(user.getEmail()) != null) {
-            log.info("non-unique email", user);
-            return null;
-        }
         if (user.isNew()) {
+            if (getByEmail(user.getEmail()) != null) {
+                log.info("non-unique email{}", user.getEmail());
+                return null;
+            }
             user.setId(counter.incrementAndGet());
             repository.put(user.getId(), user);
             return user;
         }
         // handle case: update, but not present in storage
-        return repository.computeIfPresent(user.getId(), (id, oldMeal) -> user);
+        return repository.computeIfPresent(user.getId(), (id, oldUser) -> user);
     }
 
     @Override
@@ -64,7 +61,10 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public User getByEmail(String email) {
         log.info("getByEmail {}", email);
-        return
-                repository.values().stream().filter(user -> user.getEmail().equals(email)).findFirst().orElse(null);
+        return repository
+                .values()
+                .stream()
+                .filter(user -> user.getEmail().equalsIgnoreCase(email))
+                .findFirst().orElse(null);
     }
 }

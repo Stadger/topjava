@@ -37,10 +37,10 @@
             <tr>
                 <%--                <c:set var="dateTime" value="${listDateAndTime}"/>--%>
                 <input type="hidden" name="action" value="filter">
-                <th><input type="date" name="startDate"></th>
-                <th><input type="time" name="startTime"></th>
-                <th><input type="date" name="endDate"></th>
-                <th><input type="time" name="endTime"></th>
+                <th><input type="date" name="startDate" value="${startDate}"></th>
+                <th><input type="time" name="startTime"value="${startTime}"></th>
+                <th><input type="date" name="endDate" value="${endDate}"></th>
+                <th><input type="time" name="endTime" value="${endTime}"></th>
                 <th>
                     <button type="submit">Отфильтровать</button>
                 </th>

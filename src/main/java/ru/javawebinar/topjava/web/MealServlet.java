@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletException;
@@ -20,7 +21,7 @@ import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
-    ConfigurableApplicationContext appCtx;
+    private ConfigurableApplicationContext appCtx;
     private MealRestController mealRestController;
 
     @Override
@@ -31,7 +32,6 @@ public class MealServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        super.destroy();
         appCtx.close();
     }
 
@@ -73,15 +73,18 @@ public class MealServlet extends HttpServlet {
             case "filter":
                 log.info("getAllFilter");
                 String line = request.getParameter("startDate");
-                LocalDate startDate = (line != null && !line.isEmpty()) ? LocalDate.parse(line) : null;
+                LocalDate startDate = DateTimeUtil.dataParse(line);
                 line = request.getParameter("endDate");
-                LocalDate endDate = (line != null && !line.isEmpty()) ? LocalDate.parse(line) : null;
+                LocalDate endDate = DateTimeUtil.dataParse(line);
                 line = request.getParameter("startTime");
-                LocalTime startTime = (line != null && !line.isEmpty()) ? LocalTime.parse(line) : null;
+                LocalTime startTime = DateTimeUtil.timeParse(line);
                 line = request.getParameter("endTime");
-                LocalTime endTime = (line != null && !line.isEmpty()) ? LocalTime.parse(line) : null;
-                System.out.println(startDate + "" + endDate + startTime + endTime);
-                request.setAttribute("meals", mealRestController.getAllFilter(startDate, startTime, endDate, endTime));
+                LocalTime endTime =  DateTimeUtil.timeParse(line);
+                request.setAttribute("meals", mealRestController.getAllFiltered(startDate, startTime, endDate, endTime));
+                request.setAttribute("startTime",startTime);
+                request.setAttribute("endTime",endTime);
+                request.setAttribute("startDate",startDate);
+                request.setAttribute("endDate",endDate);
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
             case "all":
             default:

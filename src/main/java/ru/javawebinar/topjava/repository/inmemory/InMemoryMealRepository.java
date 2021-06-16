@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Repository
@@ -24,7 +25,8 @@ public class InMemoryMealRepository implements MealRepository {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     {
-        MealsUtil.meals.forEach(meal -> save(meal, 1));
+        MealsUtil.meals1.forEach(meal -> save(meal, 1));
+        MealsUtil.meals2.forEach(meal -> save(meal, 2));
     }
 
     @Override
@@ -52,35 +54,43 @@ public class InMemoryMealRepository implements MealRepository {
     public boolean delete(int id, int userId) {
         log.info("delete {} userId{}", id, userId);
         AtomicBoolean result = new AtomicBoolean(false);
-        repository.computeIfPresent(id, (idMail, oldMeal) -> {
-            if (oldMeal.getUserId() == userId) {
-                result.set(true);
-                return null;
-            } else return oldMeal;
-        });
+        repository
+                .computeIfPresent(id, (idMeal, oldMeal) -> {
+                    if (oldMeal.getUserId() == userId) {
+                        result.set(true);
+                        return null;
+                    } else return oldMeal;
+                });
         return result.get();
     }
 
     @Override
     public Meal get(int id, int userId) {
         log.info("get {} userId{}", id, userId);
-        Meal meal;
-        return ((meal = repository.get(id)) != null && meal.getUserId() == userId) ?
-                meal : null;
+        Meal meal = repository.get(id);
+        return ((meal != null) && meal.getUserId() == userId) ? meal : null;
     }
 
     @Override
     public List<Meal> getAll(int userId) {
         log.info("getall {} ", userId);
-        return repository.values().stream().filter(meal -> meal.getUserId() == userId)
-                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
-                .collect(Collectors.toList());
+        return filterByPredicate(userId, meal -> true);
     }
 
     @Override
-    public List<Meal> getFilterDate(int userId, LocalDate startDate, LocalDate endDate) {
+    public List<Meal> getFilteredByDates(int userId, LocalDate startDate, LocalDate endDate) {
         log.info("getallFilterDate {} startTime{} endTime{} ", userId, startDate, endDate);
-        return getAll(userId).stream().filter(meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), startDate, endDate)).collect(Collectors.toList());
+        return filterByPredicate(userId, meal -> DateTimeUtil.isBetweenOpen(meal.getDate(), startDate, endDate));
+    }
+
+    private List<Meal> filterByPredicate(int userId, Predicate<Meal> filter) {
+        return repository
+                .values()
+                .stream()
+                .filter(meal -> meal.getUserId() == userId)
+                .filter(filter)
+                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
+                .collect(Collectors.toList());
     }
 }
 

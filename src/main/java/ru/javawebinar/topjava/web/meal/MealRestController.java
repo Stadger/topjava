@@ -15,29 +15,30 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
+
 @Controller
 public class MealRestController {
-    private static final Logger log = LoggerFactory.getLogger(InMemoryUserRepository.class);
-
+    private static final Logger log = LoggerFactory.getLogger(MealRestController.class);
+    private MealService service;
     @Autowired
     public MealRestController(MealService service) {
         this.service = service;
     }
-
-    private MealService service;
 
     public List<MealTo> getAll() {
         log.info("getAll");
         return MealsUtil.getTos(service.getAll(SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay());
     }
 
-    public List<MealTo> getAllFilter(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
+    public List<MealTo> getAllFiltered(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
         log.info("getallFilter startDate{},startTime{}, endDate{},endTime{}", startDate, startTime, endDate, endTime);
-        if (startDate == null) startDate = LocalDate.MIN;
-        if (endDate == null) endDate = LocalDate.MAX;
+        startDate = (startDate == null)?LocalDate.MIN:startDate;
+        endDate = (endDate == null)?LocalDate.MAX: endDate;
         List<Meal> mealFilterDate = service.getFilterDate(SecurityUtil.authUserId(), startDate, endDate);
-        if (startTime == null) startTime = LocalTime.MIN;
-        if (endTime == null) endTime = LocalTime.MAX;
+        startTime = (startTime == null)?LocalTime.MIN:startTime;
+        endTime = (endTime == null)?LocalTime.MAX:endTime;
         return MealsUtil.getFilteredTos(mealFilterDate, SecurityUtil.authUserCaloriesPerDay(), startTime, endTime);
     }
 
@@ -53,12 +54,13 @@ public class MealRestController {
 
     public Meal create(Meal meal) {
         log.info("create {}", meal);
+        checkNew(meal);
         return service.create(meal, SecurityUtil.authUserId());
     }
 
     public void update(Meal meal, int id) {
         log.info("update {} with id={}", meal, id);
+        assureIdConsistent(meal, id);
         service.update(meal, SecurityUtil.authUserId());
     }
-
 }
