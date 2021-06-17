@@ -22,7 +22,7 @@ public class DateTimeUtil {
         return ldt == null ? "" : ldt.format(DATE_TIME_FORMATTER);
     }
 
-    public static LocalDate dataParse(String s) {
+    public static LocalDate dateParse(String s) {
         return StringUtils.hasLength(s) ? LocalDate.parse(s) : null;
     }
 

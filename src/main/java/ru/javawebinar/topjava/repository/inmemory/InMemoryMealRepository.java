@@ -9,9 +9,11 @@ import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -32,38 +34,29 @@ public class InMemoryMealRepository implements MealRepository {
         log.info("save {} userId{}", meal, userId);
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            meal.setUserId(userId);
-            repository.computeIfAbsent(userId, k -> new HashMap<>()).put(meal.getId(), meal);
+            repository.computeIfAbsent(userId, k -> new ConcurrentHashMap<>()).put(meal.getId(), meal);
             return meal;
         }
-        AtomicBoolean result = new AtomicBoolean(false);
-        repository.computeIfPresent(userId, (idUser, map) -> {
-            if (map.computeIfPresent(meal.getId(), (id, oldMeal) -> meal) != null) {
-                result.set(true);
-            }
-            return map;
-        });
-        return result.get() ? meal : null;
+        return repository
+                .getOrDefault(userId, Collections.emptyMap())
+                .computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
 
     @Override
     public boolean delete(int id, int userId) {
         log.info("delete {} userId{}", id, userId);
-        AtomicBoolean result = new AtomicBoolean(false);
-        repository.computeIfPresent(userId, (idUser, map) -> {
-            if (map.remove(id) != null) {
-                result.set(true);
-            }
-            return map;
-        });
-        return result.get();
+        return repository
+                .getOrDefault(userId, Collections.emptyMap())
+                .remove(id)
+                != null;
     }
 
     @Override
     public Meal get(int id, int userId) {
         log.info("get {} userId{}", id, userId);
-        Map<Integer, Meal> map = repository.get(userId);
-        return map != null ? map.get(id) : null;
+        return repository
+                .getOrDefault(userId, Collections.emptyMap())
+                .get(id);
     }
 
     @Override
