@@ -15,8 +15,6 @@ VALUES ('USER', 100000),
        ('ADMIN', 100001);
 
 INSERT INTO meals (user_id, description, date_time, calories)
-VALUES (100000, 'ytrtyrty', '2020-12-31 11:59:59'::timestamp, 500),
- (100000, 'ytrtyrhjghjty', '2020-12-30 16:59:59'::timestamp, 500),
- (100000, 'ytrtygjhrty', '2020-12-30 15:59:59'::timestamp, 500),
-       (100000, 'ytrtyrty', '2020-12-31 12:59:59'::timestamp, 500),
-       (100001, 'eryyyyr', '2021-12-31 23:59:59'::timestamp, 2000);
+VALUES (100000, 'user meal 1', '2020-12-31 11:17'::timestamp, 500),
+       (100000, 'user meal 2', '2020-12-30 16:30'::timestamp, 800),
+       (100001, 'admin meal 1', '2021-12-31 23:20'::timestamp, 2000);
