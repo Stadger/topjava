@@ -11,10 +11,8 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.Assert.assertThrows;
@@ -66,14 +64,20 @@ public class MealServiceTest {
     @Test
     public void getBetweenInclusive() {
         List<Meal> all = service.getBetweenInclusive(DATE_OF_MEAL_USER_1, DATE_OF_MEAL_USER_1, USER_ID);
-        assertMatch(all, meal1);
+        assertMatch(all, meal6, meal5, meal1);
+    }
+
+    @Test
+    public void getBetweenInclusiveNullBorder() {
+        List<Meal> all = service.getBetweenInclusive(null, null, USER_ID);
+        List<Meal> allNoFilter = service.getAll(USER_ID);
+        assertMatch(all, meal7, meal6, meal5, meal1, meal2, meal4, meal3);
     }
 
     @Test
     public void getAll() {
         List<Meal> all = service.getAll(USER_ID);
-        System.out.println(all);
-        assertMatch(all, meal2, meal1);
+        assertMatch(all, meal7, meal6, meal5, meal1, meal2, meal4, meal3);
     }
 
     @Test
@@ -103,6 +107,6 @@ public class MealServiceTest {
     @Test
     public void duplicateDateTimeCreate() {
         assertThrows(DataAccessException.class, () ->
-                service.create(new Meal(null, LocalDateTime.parse("2020-12-31 11:17", DateTimeUtil.DATE_TIME_FORMATTER), "duplicate dateTime", 20), USER_ID));
+                service.create(new Meal(null, DATE_TIME_OF_MEAL_USER_1, "duplicate dateTime", 20), USER_ID));
     }
 }
