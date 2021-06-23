@@ -40,7 +40,7 @@ public class MealServiceTest {
     @Test
     public void get() {
         Meal meal1 = service.get(MEAL_USER_1, USER_ID);
-        assertMatch(meal1, MealTestData.meal1);
+        assertMatch(meal1, MealTestData.mealUser1);
     }
 
     @Test
@@ -63,21 +63,20 @@ public class MealServiceTest {
 
     @Test
     public void getBetweenInclusive() {
-        List<Meal> all = service.getBetweenInclusive(DATE_OF_MEAL_USER_1, DATE_OF_MEAL_USER_1, USER_ID);
-        assertMatch(all, meal6, meal5, meal1);
+        List<Meal> all = service.getBetweenInclusive(DATE_CHECK_BEETHIN, DATE_CHECK_BEETHIN, USER_ID);
+        assertMatch(all, mealUser6, mealUser5, mealUser1);
     }
 
     @Test
     public void getBetweenInclusiveNullBorder() {
         List<Meal> all = service.getBetweenInclusive(null, null, USER_ID);
-        List<Meal> allNoFilter = service.getAll(USER_ID);
-        assertMatch(all, meal7, meal6, meal5, meal1, meal2, meal4, meal3);
+        assertMatch(all, mealUser7, mealUser6, mealUser5, mealUser1, mealUser2, mealUser4, mealUser3);
     }
 
     @Test
     public void getAll() {
         List<Meal> all = service.getAll(USER_ID);
-        assertMatch(all, meal7, meal6, meal5, meal1, meal2, meal4, meal3);
+        assertMatch(all, mealUser7, mealUser6, mealUser5, mealUser1, mealUser2, mealUser4, mealUser3);
     }
 
     @Test
@@ -107,6 +106,6 @@ public class MealServiceTest {
     @Test
     public void duplicateDateTimeCreate() {
         assertThrows(DataAccessException.class, () ->
-                service.create(new Meal(null, DATE_TIME_OF_MEAL_USER_1, "duplicate dateTime", 20), USER_ID));
+                service.create(new Meal(null, mealUser1.getDateTime(), "duplicate dateTime", 20), USER_ID));
     }
 }
