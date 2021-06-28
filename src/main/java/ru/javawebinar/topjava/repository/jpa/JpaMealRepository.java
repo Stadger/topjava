@@ -28,11 +28,9 @@ public class JpaMealRepository implements MealRepository {
             em.persist(meal);
             return meal;
         } else {
-            meal.setUser(ref);
-            // в тестах на update поле User null, поэтому meal.setUser(ref);
-            // или исправить тесты
             Meal m = em.getReference(Meal.class, meal.getId());
             if (m.getUser().getId() == userId) {
+                meal.setUser(ref);
                 return em.merge(meal);
             }
         }
