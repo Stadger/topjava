@@ -1,10 +1,9 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestWatcher;
+import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -18,10 +17,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -36,42 +34,26 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
-    private static String watchedLog;
-    private static Instant start;
-    private static final StringBuilder resultTests = new StringBuilder();
+    private static final StringBuilder resultTests = new StringBuilder("\n");
 
     @Autowired
     private MealService service;
 
     @Rule
-    public TestWatcher watchman = new TestWatcher() {
-        @Override
-        protected void starting(Description description) {
-            start = Instant.now();
+    public Stopwatch watchman = new Stopwatch() {
+
+        private void logInfo(String testName, long nanos) {
+            resultTests.append(String.format(String.format("\tTest: %-30s %10d microseconds \n",
+                    testName, TimeUnit.NANOSECONDS.toMicros(nanos))));
+            log.info(String.format("Test %s %d microseconds\n",
+                    testName, TimeUnit.NANOSECONDS.toMicros(nanos)));
         }
 
         @Override
-        protected void failed(Throwable e, Description description) {
-            watchedLog = description + "failed";
-        }
-
-        @Override
-        protected void succeeded(Description description) {
-            watchedLog = description + " " + "success!";
-        }
-
-        @Override
-        protected void finished(Description description) {
-            long elapsed = Duration.between(start, Instant.now()).toMillis();
-            log.info("Test {}   - {} duration {}", description.getMethodName(), watchedLog, elapsed);
-            resultTests.append(String.format("Test: %s:%d \n", description.getMethodName(), elapsed));
+        protected void finished(long nanos, Description description) {
+            logInfo(description.getMethodName(), TimeUnit.NANOSECONDS.toMicros(nanos));
         }
     };
-
-    @BeforeClass
-    public static void beforeClass() throws Exception {
-
-    }
 
     @AfterClass
     public static void afterClass() throws Exception {
