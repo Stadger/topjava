@@ -34,7 +34,8 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
-    private static final StringBuilder resultTests = new StringBuilder("\n");
+    private static final StringBuilder resultTests = new StringBuilder(String.format("\n\t%-30s %10s \n",
+            "Test:", "milliseconds"));
 
     @Autowired
     private MealService service;
@@ -42,16 +43,14 @@ public class MealServiceTest {
     @Rule
     public Stopwatch watchman = new Stopwatch() {
 
-        private void logInfo(String testName, long nanos) {
-            resultTests.append(String.format(String.format("\tTest: %-30s %10d microseconds \n",
-                    testName, TimeUnit.NANOSECONDS.toMicros(nanos))));
-            log.info(String.format("Test %s %d microseconds\n",
-                    testName, TimeUnit.NANOSECONDS.toMicros(nanos)));
-        }
-
         @Override
         protected void finished(long nanos, Description description) {
-            logInfo(description.getMethodName(), TimeUnit.NANOSECONDS.toMicros(nanos));
+            String testName = description.getMethodName();
+            long millis = TimeUnit.NANOSECONDS.toMillis(nanos);
+            resultTests.append(String.format("\t%-30s %10d\n",
+                    testName, millis));
+            log.info(String.format("Test %s %d milliseconds\n",
+                    testName, millis));
         }
     };
 
