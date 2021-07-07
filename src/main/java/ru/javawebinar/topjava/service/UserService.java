@@ -15,7 +15,7 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 @Service
 public class UserService {
 
-    private final UserRepository repository;
+    protected final UserRepository repository;
 
     public UserService(UserRepository repository) {
         this.repository = repository;
@@ -50,5 +50,9 @@ public class UserService {
     public void update(User user) {
         Assert.notNull(user, "user must not be null");
         checkNotFoundWithId(repository.save(user), user.id());
+    }
+
+    public User getWithMeals(int id) {
+        return checkNotFoundWithId(repository.getWithMeals(id), id);
     }
 }
