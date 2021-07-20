@@ -86,6 +86,7 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     @Test
     public void update() {
         User updated = getUpdated();
+
         service.update(updated);
         MATCHER.assertMatch(service.get(USER_ID), getUpdated());
     }
