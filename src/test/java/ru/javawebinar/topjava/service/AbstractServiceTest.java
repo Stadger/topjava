@@ -13,7 +13,10 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.ActiveDbProfileResolver;
+import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.TimingRules;
+
+import java.util.Arrays;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.util.ValidationUtil.getRootCause;
@@ -29,6 +32,10 @@ public abstract class AbstractServiceTest {
 
     @Autowired
     protected Environment environment;
+
+    protected boolean isNoJdbcProfile() {
+        return !Arrays.stream(environment.getActiveProfiles()).anyMatch(Profiles.JDBC::equals);
+    }
 
     @ClassRule
     public static ExternalResource summary = TimingRules.SUMMARY;
