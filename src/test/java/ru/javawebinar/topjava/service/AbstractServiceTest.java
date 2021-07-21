@@ -30,14 +30,14 @@ import static ru.javawebinar.topjava.util.ValidationUtil.getRootCause;
 @ActiveProfiles(resolver = ActiveDbProfileResolver.class)
 public abstract class AbstractServiceTest {
 
-    @Autowired
-    private Environment environment;
-
     @ClassRule
     public static ExternalResource summary = TimingRules.SUMMARY;
 
     @Rule
     public Stopwatch stopwatch = TimingRules.STOPWATCH;
+
+    @Autowired
+    private Environment environment;
 
     protected boolean isNoJdbcProfile() {
         return Arrays.stream(environment.getActiveProfiles()).noneMatch(Profiles.JDBC::equals);

@@ -7,6 +7,7 @@ import ru.javawebinar.topjava.model.AbstractBaseEntity;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import java.util.Set;
@@ -17,10 +18,10 @@ public class ValidationUtil {
     private ValidationUtil() {
     }
 
-    public static <T> void validate(T entityJdbc) {
-        Set<ConstraintViolation<T>> violations = validator.validate(entityJdbc);
+    public static <T> void validate(T entity) {
+        Set<ConstraintViolation<T>> violations = validator.validate(entity);
         if (!violations.isEmpty()) {
-            throw new RuntimeException(violations.toString());
+            throw new ConstraintViolationException(violations);
         }
     }
 

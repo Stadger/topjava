@@ -23,7 +23,6 @@ import java.util.Set;
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.UserTestData.*;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Autowired
@@ -101,7 +100,7 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void a1update() {
+    public void update() {
         User updated = getUpdated();
         service.update(updated);
         MATCHER.assertMatch(service.get(ADMIN_ID), getUpdated());
@@ -109,14 +108,14 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void a2getAll() {
+    public void getAll() {
         List<User> all = service.getAll();
         MATCHER.assertMatch(all, admin, user);
     }
 
     @Test
     public void createWithException() throws Exception {
-        Assume.assumeTrue(isNoJdbcProfile());
+        //Assume.assumeTrue(isNoJdbcProfile());
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "  ", "mail@yandex.ru", "password", Role.USER)));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "  ", "password", Role.USER)));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "mail@yandex.ru", "  ", Role.USER)));

@@ -88,7 +88,7 @@ public abstract class AbstractMealServiceTest extends AbstractServiceTest {
 
     @Test
     public void getAll() {
-        MATCHER.assertMatch(service.getAll(USER_ID), mealsUser);
+        MATCHER.assertMatch(service.getAll(USER_ID), userMeals);
     }
 
     @Test
@@ -101,12 +101,12 @@ public abstract class AbstractMealServiceTest extends AbstractServiceTest {
 
     @Test
     public void getBetweenWithNullDates() {
-        MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), mealsUser);
+        MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), userMeals);
     }
 
     @Test
     public void createWithException() throws Exception {
-        Assume.assumeTrue(isNoJdbcProfile());
+        //Assume.assumeTrue(isNoJdbcProfile());
         validateRootCause(ConstraintViolationException.class, () -> service.create(new Meal(null, of(2015, Month.JUNE, 1, 18, 0), "  ", 300), USER_ID));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new Meal(null, null, "Description", 300), USER_ID));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new Meal(null, of(2015, Month.JUNE, 1, 18, 0), "Description", 9), USER_ID));

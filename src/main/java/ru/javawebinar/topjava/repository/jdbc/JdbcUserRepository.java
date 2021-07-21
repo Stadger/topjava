@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 public class JdbcUserRepository implements UserRepository {
 
     private static final BeanPropertyRowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
+    private static final ResultSetExtractor<List<User>> SET_EXTRACTOR = getExtractor();
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -74,20 +75,20 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public User get(int id) {
-        List<User> users = jdbcTemplate.query("SELECT * FROM users u  LEFT JOIN user_roles r ON u.id = r.user_id WHERE id=?", getExtractor(), id);
+        List<User> users = jdbcTemplate.query("SELECT * FROM users u  LEFT JOIN user_roles r ON u.id = r.user_id WHERE id=?", SET_EXTRACTOR, id);
         return DataAccessUtils.singleResult(users);
     }
 
     @Override
     public User getByEmail(String email) {
 //        return jdbcTemplate.queryForObject("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
-        List<User> users = jdbcTemplate.query("SELECT DISTINCT * FROM users u  LEFT JOIN user_roles r ON u.id = r.user_id  WHERE email=?", getExtractor(), email);
+        List<User> users = jdbcTemplate.query("SELECT DISTINCT * FROM users u  LEFT JOIN user_roles r ON u.id = r.user_id  WHERE email=?", SET_EXTRACTOR, email);
         return DataAccessUtils.singleResult(users);
     }
 
     @Override
     public List<User> getAll() {
-        return jdbcTemplate.query("SELECT * FROM users u LEFT JOIN user_roles r ON u.id=r.user_id ORDER BY name, email", getExtractor());
+        return jdbcTemplate.query("SELECT * FROM users u LEFT JOIN user_roles r ON u.id=r.user_id", SET_EXTRACTOR);
     }
 
     private void saveRoles(List<Role> roles, int userId) {
@@ -107,33 +108,31 @@ public class JdbcUserRepository implements UserRepository {
                 });
     }
 
-    private ResultSetExtractor<List<User>> getExtractor() {
+    private static ResultSetExtractor<List<User>> getExtractor() {
         return new ResultSetExtractor<List<User>>() {
             @Override
             public List<User> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 Map<Integer, User> map = new HashMap<>();
+                int rowNum = 0;
                 while (rs.next()) {
                     int id = rs.getInt("id");
-                    String name = rs.getString("name");
-                    String email = rs.getString("email");
-                    String password = rs.getString("password");
-                    int calor = rs.getInt("calories_per_day");
-                    boolean enabl = rs.getBoolean("enabled");
-                    Date registr = rs.getDate("registered");
-                    String rol = rs.getString("role");
-                    if (StringUtils.hasLength(rol)) {
+                    User user = map.get(id);
+                    if (user == null) {
+                        user = ROW_MAPPER.mapRow(rs, rowNum++);
+                        user.setRoles(Collections.EMPTY_SET);
+                        map.put(id, user);
+                    }
+                    String role = rs.getString("role");
+                    if (StringUtils.hasLength(role)) {
                         Role roles = Role.valueOf(rs.getString("role"));
-                        map.merge(id, new User(id, name, email, password, calor, enabl, registr,
-                                Set.of(roles)), (a, b) -> {
-                            a.getRoles().add(roles);
-                            return a;
-                        });
-                    } else {
-                        map.putIfAbsent(id, new User(id, name, email, password, calor, enabl, registr,
-                                Collections.EMPTY_SET));
+                        user.getRoles().add(roles);
                     }
                 }
-                return new ArrayList<>(map.values());
+                return map.values()
+                        .stream()
+                        .sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail))
+                        .collect(Collectors.toList());
+
             }
         };
     }
