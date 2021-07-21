@@ -31,17 +31,17 @@ import static ru.javawebinar.topjava.util.ValidationUtil.getRootCause;
 public abstract class AbstractServiceTest {
 
     @Autowired
-    protected Environment environment;
-
-    protected boolean isNoJdbcProfile() {
-        return !Arrays.stream(environment.getActiveProfiles()).anyMatch(Profiles.JDBC::equals);
-    }
+    private Environment environment;
 
     @ClassRule
     public static ExternalResource summary = TimingRules.SUMMARY;
 
     @Rule
     public Stopwatch stopwatch = TimingRules.STOPWATCH;
+
+    protected boolean isNoJdbcProfile() {
+        return Arrays.stream(environment.getActiveProfiles()).noneMatch(Profiles.JDBC::equals);
+    }
 
     //  Check root cause in JUnit: https://github.com/junit-team/junit4/pull/778
     protected <T extends Throwable> void validateRootCause(Class<T> rootExceptionClass, Runnable runnable) {
