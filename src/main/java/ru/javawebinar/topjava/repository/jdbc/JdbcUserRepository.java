@@ -88,7 +88,7 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public List<User> getAll() {
-        return jdbcTemplate.query("SELECT * FROM users u LEFT JOIN user_roles r ON u.id=r.user_id", SET_EXTRACTOR);
+        return jdbcTemplate.query("SELECT * FROM users u LEFT JOIN user_roles r ON u.id=r.user_id ORDER BY name,email", SET_EXTRACTOR);
     }
 
     private void saveRoles(List<Role> roles, int userId) {
@@ -101,7 +101,7 @@ public class JdbcUserRepository implements UserRepository {
                         ps.setString(1, roles.get(i).name());
                         ps.setInt(2, userId);
                     }
-
+                    @Override
                     public int getBatchSize() {
                         return roles.size();
                     }
@@ -112,7 +112,7 @@ public class JdbcUserRepository implements UserRepository {
         return new ResultSetExtractor<List<User>>() {
             @Override
             public List<User> extractData(ResultSet rs) throws SQLException, DataAccessException {
-                Map<Integer, User> map = new HashMap<>();
+                Map<Integer, User> map = new LinkedHashMap<>();
                 int rowNum = 0;
                 while (rs.next()) {
                     int id = rs.getInt("id");
@@ -128,11 +128,7 @@ public class JdbcUserRepository implements UserRepository {
                         user.getRoles().add(roles);
                     }
                 }
-                return map.values()
-                        .stream()
-                        .sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail))
-                        .collect(Collectors.toList());
-
+                return new ArrayList<>(map.values());
             }
         };
     }

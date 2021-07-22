@@ -1,16 +1,10 @@
 package ru.javawebinar.topjava.service;
 
-import net.bytebuddy.pool.TypePool;
-import org.junit.Assume;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataAccessException;
-import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.JpaUtil;
@@ -35,11 +29,6 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Autowired(required = false)
     private JpaUtil jpaUtil;
-
-    @Profile({Profiles.JPA,Profiles.DATAJPA})
-    private void setJpaUtil(JpaUtil jpaUtil) {
-        this.jpaUtil = jpaUtil;
-    }
 
     @Before
     public void setup() {
