@@ -12,9 +12,6 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
-import java.time.LocalDateTime;
-import java.time.Month;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -37,14 +34,6 @@ public class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MATCHER.contentJson(meal1));
     }
-
-//    @Test
-//    void getByEmail() throws Exception {
-//        perform(MockMvcRequestBuilders.get(REST_URL + "by?email=" + user.getEmail()))
-//                .andExpect(status().isOk())
-//                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-//                .andExpect(MATCHER.contentJson(user));
-//    }
 
     @Test
     void delete() throws Exception {
@@ -85,17 +74,19 @@ public class MealRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MATCHER_MEALTO.contentJson(mealsTO));
+                .andExpect(MATCHER_MEALTO.contentJson(mealsTo));
     }
 
     @Test
     void getBetween() throws Exception {
-        LocalDateTime start = LocalDateTime.of(2020, Month.JANUARY, 30, 0, 0);
-        LocalDateTime end = LocalDateTime.of(2020, Month.JANUARY, 30, 23, 59);
-        String urlRequest = "between" + "?startDateTime=" + start.toString() + "&endDateTime=" + end.toString();
-        perform(MockMvcRequestBuilders.get(REST_URL + urlRequest))
+        String start = "2020-01-30T00:00:01";
+        String end = "2020-01-30T23:59:00";
+        perform(MockMvcRequestBuilders.get(REST_URL + "between")
+                .param("startDateTime", start)
+                .param("endDateTime", end))
+               // .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MATCHER_MEALTO.contentJson(mealsTOFilter));
+                .andExpect(MATCHER_MEALTO.contentJson(mealsToFilter));
     }
 }
