@@ -9,6 +9,17 @@ function makeEditable(datatableApi) {
         }
     });
 
+    $(".checkedEnable").click(function () {
+        $.ajax({
+            type: "POST",
+            url: ctx.ajaxUrl + $(this).closest('tr').attr('id'),
+            data: "enabled=" + $(this).prop('checked')
+        }).done(function () {
+            updateTable();
+            successNoty("Saved");
+        });
+    })
+
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
         failNoty(jqXHR);
     });
@@ -32,10 +43,12 @@ function deleteRow(id) {
     });
 }
 
+function redrawTable(data) {
+    ctx.datatableApi.clear().rows.add(data).draw();
+}
+
 function updateTable() {
-    $.get(ctx.ajaxUrl, function (data) {
-        ctx.datatableApi.clear().rows.add(data).draw();
-    });
+    $.get(ctx.ajaxUrl, redrawTable);
 }
 
 function save() {

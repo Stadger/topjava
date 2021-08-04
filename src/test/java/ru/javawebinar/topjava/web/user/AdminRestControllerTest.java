@@ -63,6 +63,17 @@ class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void setEnable() throws Exception {
+        User updated = new User(user);
+        updated.setEnabled(false);
+        perform(MockMvcRequestBuilders.post(REST_URL + USER_ID + "?email=false")
+                .param("enabled","false"))
+                .andExpect(status().isNoContent());
+
+        MATCHER.assertMatch(userService.get(USER_ID), updated);
+    }
+
+    @Test
     void createWithLocation() throws Exception {
         User newUser = UserTestData.getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)

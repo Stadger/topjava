@@ -33,19 +33,20 @@ $(function () {
             "order": [
                 [
                     0,
-                    "asc"
+                    "desc"
                 ]
             ]
         })
     );
 });
+
 function filter() {
-    $.get(ctx.ajaxUrl+"filter",$('#filterForm').serialize())
-        .done(function (data) {
-            ctx.datatableApi.clear().rows.add(data).draw()});
+    $.get(ctx.ajaxUrl + "filter", $('#filterForm').serialize())
+        .done(redrawTable);
 }
 
 function filterReset() {
-    $('#filterForm').find(':input').val("");
+    $('#filterForm')[0].reset();
+    ф
     updateTable();
 }

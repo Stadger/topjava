@@ -25,6 +25,13 @@ public class AdminUIController extends AbstractUserController {
         super.delete(id);
     }
 
+    @Override
+    @PostMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void setEnable(@PathVariable int id,@RequestParam boolean enabled) {
+        super.setEnable(id,enabled);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void create(@RequestParam String name,
