@@ -66,7 +66,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
     void setEnable() throws Exception {
         User updated = new User(user);
         updated.setEnabled(false);
-        perform(MockMvcRequestBuilders.post(REST_URL + USER_ID + "?email=false")
+        perform(MockMvcRequestBuilders.patch(REST_URL + USER_ID)
                 .param("enabled","false"))
                 .andExpect(status().isNoContent());
 

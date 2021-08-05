@@ -9,16 +9,7 @@ function makeEditable(datatableApi) {
         }
     });
 
-    $(".checkedEnable").click(function () {
-        $.ajax({
-            type: "POST",
-            url: ctx.ajaxUrl + $(this).closest('tr').attr('id'),
-            data: "enabled=" + $(this).prop('checked')
-        }).done(function () {
-            updateTable();
-            successNoty("Saved");
-        });
-    })
+    $(".checkedEnable").click(checkedFunk);
 
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
         failNoty(jqXHR);

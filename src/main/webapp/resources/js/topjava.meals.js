@@ -47,6 +47,5 @@ function filter() {
 
 function filterReset() {
     $('#filterForm')[0].reset();
-    ф
     updateTable();
 }

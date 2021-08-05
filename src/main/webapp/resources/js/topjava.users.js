@@ -49,11 +49,12 @@ $(function () {
 function checkedFunk() {
     //$(This) undefined -почему
     $.ajax({
-        type: "POST",
+        type: "PATCH",
         url: ctx.ajaxUrl + $(this).closest('tr').attr('id'),
         data: "enabled=" + $(this).prop('checked')
     }).done(function () {
+        $(this).closest('tr').css()
         updateTable();
-        successNoty("Saved");
+        successNoty($(this).val());
     });
 }
