@@ -75,7 +75,7 @@ $(function () {
                     "data": "dateTime",
                     "render": function (date, type, row) {
                         if (type === "display") {
-                            return date.substr(0, 16).replace('T', ' ');
+                            return formatDateTime(date);
                         }
                         return date;
                     }
