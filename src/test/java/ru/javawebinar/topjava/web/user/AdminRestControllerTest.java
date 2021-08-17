@@ -88,13 +88,26 @@ class AdminRestControllerTest extends AbstractControllerTest {
     @Test
     void update() throws Exception {
         User updated = getUpdated();
+        System.out.println(updated);
+        perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(jsonWithPassword(updated, "newPass")))
+               // .content(JsonUtil.writeValue(updated)))
+                .andExpect(status().isNoContent());
+
+        MATCHER.assertMatch(userService.get(USER_ID), updated);
+    }
+
+    @Test
+    void updateNotValid() throws Exception {
+        User updated = getUpdated();
+        updated.setName("a");
         perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))
                 .content(JsonUtil.writeValue(updated)))
-                .andExpect(status().isNoContent());
-
-        MATCHER.assertMatch(userService.get(USER_ID), updated);
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test
