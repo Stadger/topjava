@@ -6,12 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import java.time.Month;
+
+import static java.time.LocalDateTime.of;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -103,6 +108,17 @@ class MealRestControllerTest extends AbstractControllerTest {
         newMeal.setId(newId);
         MATCHER.assertMatch(created, newMeal);
         MATCHER.assertMatch(mealService.get(newId, USER_ID), newMeal);
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void createDuplicateDateTime() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(new Meal(null, of(2020, Month.JANUARY, 30, 13, 0), "Созданный ужин", 300)))
+                .with(userHttpBasic(user)))
+                .andExpect(content().string("{\"url\":\"http://localhost/rest/profile/meals/\",\"type\":\"VALIDATION_ERROR\",\"detail\":\"Meal with these Date and Time already exists\"}"))
+                .andExpect(status().isConflict());
     }
 
     @Test

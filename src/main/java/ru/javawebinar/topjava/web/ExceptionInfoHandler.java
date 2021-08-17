@@ -39,7 +39,14 @@ public class ExceptionInfoHandler {
     @ResponseStatus(HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
-        return logAndGetErrorInfo(req, e, true, DATA_ERROR);
+        String rootCause = ValidationUtil.getRootCause(e).toString();
+        String detail = null;
+        if (rootCause.contains("users_unique_email_idx")) {
+            detail = "User with this email already exists";
+        } else if (rootCause.contains("meals_unique_user_datetime_idx")) {
+            detail = "Meal with these Date and Time already exists";
+        }
+        return logAndGetErrorInfo(req, e, true, VALIDATION_ERROR, detail);
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
@@ -69,7 +76,7 @@ public class ExceptionInfoHandler {
         } else {
             log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
         }
-        String details = (bindError != null & bindError.length >1) ? bindError[0] : rootCause.toString();
+        String details = (bindError != null & bindError.length > 0) ? bindError[0] : rootCause.toString();
         return new ErrorInfo(req.getRequestURL(), errorType, details);
     }
 }
