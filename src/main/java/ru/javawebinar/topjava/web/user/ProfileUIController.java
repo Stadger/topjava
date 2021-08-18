@@ -1,5 +1,9 @@
 package ru.javawebinar.topjava.web.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -16,6 +20,10 @@ import javax.validation.Valid;
 @RequestMapping("/profile")
 public class ProfileUIController extends AbstractUserController {
 
+    @Autowired
+    @Lazy //for inMemoryTest
+    private MessageSourceAccessor messageSourceAccessor;
+
     @GetMapping
     public String profile() {
         return "profile";
@@ -26,10 +34,14 @@ public class ProfileUIController extends AbstractUserController {
         if (result.hasErrors()) {
             return "profile";
         } else {
-            super.update(userTo, SecurityUtil.authUserId());
-            SecurityUtil.get().setTo(userTo);
-            status.setComplete();
-            return "redirect:/meals";
+            try {
+                super.update(userTo, SecurityUtil.authUserId());
+                SecurityUtil.get().setTo(userTo);
+                status.setComplete();
+                return "redirect:/meals";
+            } catch (DataIntegrityViolationException e) {
+                return catchDataIntegrityViolationException(result);
+            }
         }
     }
 
@@ -46,9 +58,18 @@ public class ProfileUIController extends AbstractUserController {
             model.addAttribute("register", true);
             return "profile";
         } else {
-            super.create(userTo);
-            status.setComplete();
-            return "redirect:/login?message=app.registered&username=" + userTo.getEmail();
+            try {
+                super.create(userTo);
+                status.setComplete();
+                return "redirect:/login?message=app.registered&username=" + userTo.getEmail();
+            } catch (DataIntegrityViolationException e) {
+                return catchDataIntegrityViolationException(result);
+            }
         }
+    }
+
+    private String catchDataIntegrityViolationException(BindingResult result) {
+        result.rejectValue("email", "error.user", messageSourceAccessor.getMessage("exception.user.duplicateEmail"));
+        return "profile";
     }
 }

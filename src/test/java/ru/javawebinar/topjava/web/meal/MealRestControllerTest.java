@@ -86,13 +86,26 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void updateNotvalid() throws Exception {
+    void updateNotValid() throws Exception {
         Meal updated = getUpdated();
         updated.setDescription("a");
         perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID).contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(user))
                 .content(JsonUtil.writeValue(updated)))
+                .andExpect(content().string("{\"url\":\"http://localhost/rest/profile/meals/" + MEAL1_ID + "\",\"type\":\"VALIDATION_ERROR\",\"detail\":[\"[description] size must be between 2 and 120\"]}"))
                 .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void updateDuplicateDateTime() throws Exception {
+        Meal updated = getUpdated();
+        updated.setDateTime(of(2020, Month.JANUARY, 30, 13, 0));
+        perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID).contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(user))
+                .content(JsonUtil.writeValue(updated)))
+                .andExpect(content().string("{\"url\":\"http://localhost/rest/profile/meals/" + MEAL1_ID + "\",\"type\":\"VALIDATION_ERROR\",\"detail\":[\"You already have meal with this date/time\"]}"))
+                .andExpect(status().isConflict());
     }
 
     @Test
@@ -111,13 +124,27 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void createNotValid() throws Exception {
+        Meal newMeal = getNew();
+        newMeal.setCalories(0);
+        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(user))
+                .content(JsonUtil.writeValue(newMeal)))
+                .andExpect(content().string("{\"url\":\"http://localhost/rest/profile/meals/\",\"type\":\"VALIDATION_ERROR\",\"detail\":[\"[calories] must be between 10 and 5000\"]}"))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
     @Transactional(propagation = Propagation.NEVER)
     void createDuplicateDateTime() throws Exception {
+        Meal newMeal = getNew();
+        newMeal.setDateTime(of(2020, Month.JANUARY, 30, 13, 0));
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(new Meal(null, of(2020, Month.JANUARY, 30, 13, 0), "Созданный ужин", 300)))
+                .content(JsonUtil.writeValue(newMeal))
                 .with(userHttpBasic(user)))
-                .andExpect(content().string("{\"url\":\"http://localhost/rest/profile/meals/\",\"type\":\"VALIDATION_ERROR\",\"detail\":\"Meal with these Date and Time already exists\"}"))
+                .andExpect(content().string("{\"url\":\"http://localhost/rest/profile/meals/\",\"type\":\"VALIDATION_ERROR\",\"detail\":[\"You already have meal with this date/time\"]}"))
                 .andExpect(status().isConflict());
     }
 

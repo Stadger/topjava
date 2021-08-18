@@ -2,13 +2,15 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +31,10 @@ import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 public class ExceptionInfoHandler {
     private static Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
 
+    @Autowired
+    @Lazy //for inMemoryTest
+    private MessageSourceAccessor messageSourceAccessor;
+
     //  http://stackoverflow.com/a/22358422/548473
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(NotFoundException.class)
@@ -42,17 +48,17 @@ public class ExceptionInfoHandler {
         String rootCause = ValidationUtil.getRootCause(e).toString();
         String detail = null;
         if (rootCause.contains("users_unique_email_idx")) {
-            detail = "User with this email already exists";
+            detail = messageSourceAccessor.getMessage("exception.user.duplicateEmail");
         } else if (rootCause.contains("meals_unique_user_datetime_idx")) {
-            detail = "Meal with these Date and Time already exists";
+            detail = messageSourceAccessor.getMessage("exception.meal.duplicateDateTime");
         }
         return logAndGetErrorInfo(req, e, true, VALIDATION_ERROR, detail);
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
-    @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
+    @ExceptionHandler({BindException.class})
     public ErrorInfo bindRequestDataError(HttpServletRequest req, BindException e) {
-        String bindError = ValidationUtil.getErrorResponse(e.getBindingResult());
+        String[] bindError = ValidationUtil.getErrorMessage(e.getBindingResult());
         return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR, bindError);
     }
 
@@ -76,7 +82,7 @@ public class ExceptionInfoHandler {
         } else {
             log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
         }
-        String details = (bindError != null & bindError.length > 0) ? bindError[0] : rootCause.toString();
+        String[] details = (bindError.length != 0) ? bindError : new String[]{rootCause.toString()};
         return new ErrorInfo(req.getRequestURL(), errorType, details);
     }
 }
